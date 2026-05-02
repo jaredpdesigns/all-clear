@@ -5,7 +5,7 @@ import WeatherKit
 struct iOSView: View {
     @Environment(LocationService.self) private var locationService
     @Environment(WeatherDataService.self) private var weatherService
-
+    
     @State private var selectedHours: Set<Int> = {
         if let data = UserDefaults.standard.data(forKey: "selectedHours"),
            let hours = try? JSONDecoder().decode(Set<Int>.self, from: data) {
@@ -16,11 +16,16 @@ struct iOSView: View {
     @AppStorage("filterMode") private var filterMode: HourFilterMode = .selectedHours
     @State private var showingHourPicker = false
     @State private var selectedTab: ForecastDay = .today
-
+    
     private var hasCustomSelection: Bool {
         selectedHours.count < 24
     }
-
+    
+    private var isRequestingLocation: Bool {
+        (locationService.location == nil && locationService.isRequestingLocation && locationService.errorMessage == nil)
+        || locationService.location != nil
+    }
+    
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Today", systemImage: "calendar", value: ForecastDay.today) {
@@ -42,17 +47,20 @@ struct iOSView: View {
             HourPickerSheet(selectedHours: $selectedHours)
                 .presentationDetents([.medium, .large])
         }
+        .onAppear {
+            if selectedHours.count == 24 {
+                filterMode = .allHours
+            }
+        }
         .onChange(of: selectedHours) { _, newValue in
             if let data = try? JSONEncoder().encode(newValue) {
                 UserDefaults.standard.set(data, forKey: "selectedHours")
             }
-            if newValue.count == 24 {
-                filterMode = .allHours
-            }
+            filterMode = newValue.count == 24 ? .allHours : .selectedHours
         }
         .tint(.primary)
     }
-
+    
     @ViewBuilder
     private func dayContent(for day: ForecastDay) -> some View {
         if weatherService.isLoading {
@@ -62,8 +70,12 @@ struct iOSView: View {
                 locationService.requestLocation()
             }
         } else if weatherService.currentWeather == nil {
-            LocationRequestView {
-                locationService.requestLocation()
+            if isRequestingLocation {
+                WeatherLoadingView(attribution: weatherService.attribution)
+            } else {
+                LocationRequestView {
+                    locationService.requestLocation()
+                }
             }
         } else if let forecast = weatherService.dayForecast(for: day) {
             ScrollView {
@@ -79,7 +91,7 @@ struct iOSView: View {
             ForecastUnavailableView(day: day)
         }
     }
-
+    
     @ToolbarContentBuilder
     private var toolbarItems: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
@@ -92,15 +104,13 @@ struct iOSView: View {
         }
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {
-                if hasCustomSelection {
-                    Button {
-                        filterMode = .selectedHours
-                    } label: {
-                        if filterMode == .selectedHours {
-                            Label("Selected Hours", systemImage: "checkmark")
-                        } else {
-                            Text("Selected Hours")
-                        }
+                Button {
+                    filterMode = .selectedHours
+                } label: {
+                    if filterMode == .selectedHours {
+                        Label("Selected Hours", systemImage: "checkmark")
+                    } else {
+                        Text("Selected Hours")
                     }
                 }
                 Button {
@@ -117,7 +127,7 @@ struct iOSView: View {
             }
         }
     }
-
+    
     private func filteredHours(for day: ForecastDay) -> [HourWeather] {
         let calendar = Calendar.current
         let dayHours: [HourWeather] = switch day {
@@ -126,7 +136,7 @@ struct iOSView: View {
         case .tomorrow:
             weatherService.hourlyForecast.filter { calendar.isDateInTomorrow($0.date) }
         }
-
+        
         guard hasCustomSelection, filterMode == .selectedHours else {
             return dayHours
         }

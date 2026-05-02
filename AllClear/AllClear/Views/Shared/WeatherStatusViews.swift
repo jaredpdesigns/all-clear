@@ -3,7 +3,7 @@ import SwiftUI
 struct WeatherErrorView: View {
     let error: String
     let onRetry: () -> Void
-
+    
     var body: some View {
         ContentUnavailableView {
             Label("Unable to Load", systemImage: "exclamationmark.triangle")
@@ -18,7 +18,7 @@ struct WeatherErrorView: View {
 
 struct LocationRequestView: View {
     let onRequestLocation: () -> Void
-
+    
     var body: some View {
         ContentUnavailableView {
             Label("Waiting for Location", systemImage: "location")
@@ -33,12 +33,24 @@ struct LocationRequestView: View {
 
 struct ForecastUnavailableView: View {
     let day: ForecastDay
-
+    
     var body: some View {
         ContentUnavailableView {
             Label("Forecast Unavailable", systemImage: "cloud.slash")
         } description: {
             Text("Unable to load the \(day.rawValue.lowercased()) forecast.")
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+struct HourSelectionEmptyView: View {
+    var body: some View {
+        ContentUnavailableView {
+            Label("No Hours Selected", systemImage: "clock.badge.exclamationmark")
+                .symbolRenderingMode(.hierarchical)
+        } description: {
+            Text("Please select one or more hours to use this filter.")
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

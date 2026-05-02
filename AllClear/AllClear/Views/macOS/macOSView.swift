@@ -4,7 +4,7 @@ import WeatherKit
 struct macOSView: View {
     @Environment(LocationService.self) private var locationService
     @Environment(WeatherDataService.self) private var weatherService
-
+    
     @State private var selectedDay: ForecastDay = .today
     @State private var selectedHours: Set<Int> = {
         if let data = UserDefaults.standard.data(forKey: "selectedHours"),
@@ -15,11 +15,16 @@ struct macOSView: View {
     }()
     @AppStorage("filterMode") private var filterMode: HourFilterMode = .selectedHours
     @State private var showingHourPicker = false
-
+    
     private var hasCustomSelection: Bool {
         selectedHours.count < 24
     }
-
+    
+    private var isRequestingLocation: Bool {
+        (locationService.location == nil && locationService.isRequestingLocation && locationService.errorMessage == nil)
+        || locationService.location != nil
+    }
+    
     var body: some View {
         Group {
             if weatherService.isLoading {
@@ -29,8 +34,12 @@ struct macOSView: View {
                     locationService.requestLocation()
                 }
             } else if weatherService.currentWeather == nil {
-                LocationRequestView {
-                    locationService.requestLocation()
+                if isRequestingLocation {
+                    WeatherLoadingView(attribution: weatherService.attribution)
+                } else {
+                    LocationRequestView {
+                        locationService.requestLocation()
+                    }
                 }
             } else if let forecast = weatherService.dayForecast(for: selectedDay) {
                 VStack(spacing: 0) {
@@ -41,7 +50,7 @@ struct macOSView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding()
-
+                    
                     ScrollView {
                         PrecipitationView(
                             currentWeather: selectedDay == .today ? weatherService.currentWeather : nil,
@@ -69,15 +78,13 @@ struct macOSView: View {
             }
             ToolbarItem(placement: .automatic) {
                 Menu {
-                    if hasCustomSelection {
-                        Button {
-                            filterMode = .selectedHours
-                        } label: {
-                            if filterMode == .selectedHours {
-                                Label("Selected Hours", systemImage: "checkmark")
-                            } else {
-                                Text("Selected Hours")
-                            }
+                    Button {
+                        filterMode = .selectedHours
+                    } label: {
+                        if filterMode == .selectedHours {
+                            Label("Selected Hours", systemImage: "checkmark")
+                        } else {
+                            Text("Selected Hours")
                         }
                     }
                     Button {
@@ -98,16 +105,19 @@ struct macOSView: View {
             HourPickerSheet(selectedHours: $selectedHours)
                 .frame(minWidth: 360, minHeight: 320)
         }
+        .onAppear {
+            if selectedHours.count == 24 {
+                filterMode = .allHours
+            }
+        }
         .onChange(of: selectedHours) { _, newValue in
             if let data = try? JSONEncoder().encode(newValue) {
                 UserDefaults.standard.set(data, forKey: "selectedHours")
             }
-            if newValue.count == 24 {
-                filterMode = .allHours
-            }
+            filterMode = newValue.count == 24 ? .allHours : .selectedHours
         }
     }
-
+    
     private var filteredHours: [HourWeather] {
         let calendar = Calendar.current
         let dayHours: [HourWeather] = switch selectedDay {
@@ -116,7 +126,7 @@ struct macOSView: View {
         case .tomorrow:
             weatherService.hourlyForecast.filter { calendar.isDateInTomorrow($0.date) }
         }
-
+        
         guard hasCustomSelection, filterMode == .selectedHours else {
             return dayHours
         }

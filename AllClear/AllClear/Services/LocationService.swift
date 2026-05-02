@@ -5,6 +5,7 @@ final class LocationService: NSObject {
     var location: CLLocation?
     var authorizationStatus: CLAuthorizationStatus = .notDetermined
     var errorMessage: String?
+    var isRequestingLocation = false
     
     private let manager = CLLocationManager()
     
@@ -16,21 +17,23 @@ final class LocationService: NSObject {
     
     func requestLocation() {
         errorMessage = nil
+        isRequestingLocation = true
         switch manager.authorizationStatus {
         case .notDetermined:
-            #if os(macOS)
+#if os(macOS)
             manager.requestAlwaysAuthorization()
-            #else
+#else
             manager.requestWhenInUseAuthorization()
-            #endif
+#endif
         case .authorizedAlways:
             manager.requestLocation()
-        #if !os(macOS)
+#if !os(macOS)
         case .authorizedWhenInUse:
             manager.requestLocation()
-        #endif
+#endif
         case .denied, .restricted:
             errorMessage = "Location access denied. Please enable it in Settings."
+            isRequestingLocation = false
         @unknown default:
             break
         }
@@ -44,6 +47,7 @@ extension LocationService: CLLocationManagerDelegate {
     ) {
         let newLocation = locations.first
         Task { @MainActor in
+            self.isRequestingLocation = false
             self.location = newLocation
         }
     }
@@ -54,6 +58,7 @@ extension LocationService: CLLocationManagerDelegate {
     ) {
         let message = error.localizedDescription
         Task { @MainActor in
+            self.isRequestingLocation = false
             self.errorMessage = message
         }
     }
@@ -64,13 +69,16 @@ extension LocationService: CLLocationManagerDelegate {
         let status = manager.authorizationStatus
         Task { @MainActor in
             self.authorizationStatus = status
-            #if os(macOS)
+#if os(macOS)
             let isAuthorized = status == .authorizedAlways
-            #else
+#else
             let isAuthorized = status == .authorizedWhenInUse || status == .authorizedAlways
-            #endif
+#endif
             if isAuthorized {
+                self.isRequestingLocation = true
                 self.manager.requestLocation()
+            } else if status == .denied || status == .restricted {
+                self.isRequestingLocation = false
             }
         }
     }
