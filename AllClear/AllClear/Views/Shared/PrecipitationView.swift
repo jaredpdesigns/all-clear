@@ -82,26 +82,44 @@ private struct HourRow: View {
     let hour: HourWeather
     
     var body: some View {
-        HStack(spacing: 12) {
-            Text(hour.date, format: .dateTime.hour(.defaultDigits(amPM: .abbreviated)))
-                .frame(width: 48, alignment: .trailing)
-                .monospacedDigit()
-            
+        HStack(spacing: 16) {
             Image(systemName: hour.symbolName)
-                .frame(width: 32, height: 32)
-                .imageScale(.large)
-                .symbolRenderingMode(.hierarchical)
+                .font(.title2)
+                .frame(width: 24)
             
-            Text(hour.temperature.formatted(.measurement(width: .narrow, numberFormatStyle: .number.precision(.fractionLength(0)))))
-                .frame(width: 32)
+            HStack(spacing: 2) {
+                Text(hour.date, format: Date.VerbatimFormatStyle(
+                    format: "\(hour: .defaultDigits(clock: .twelveHour, hourCycle: .oneBased))",
+                    timeZone: .current,
+                    calendar: .current
+                ))
                 .monospacedDigit()
+                
+                Text(Calendar.current.component(.hour, from: hour.date) < 12 ? "AM" : "PM")
+                    .font(.body.smallCaps())
+            }
+            .frame(width: 48, alignment: .trailing)
+            
+            Text("\(hour.temperature.formatted(.measurement( numberFormatStyle: .number.precision(.fractionLength(0)))))")
+                .monospacedDigit()
+            
+            Label(
+                "\(hour.wind.speed.converted(to: .milesPerHour).value, specifier: "%.0f") mph",
+                systemImage: "wind"
+            )
+            .monospacedDigit()
             
             Spacer()
             
-            Text("\(Int(hour.precipitationChance * 100))%")
+            Label("\(Int(hour.precipitationChance * 100))%", systemImage: "drop")
                 .monospacedDigit()
-                .fontWeight(.bold)
+                .frame(width: 72, alignment: .leading)
         }
         .frame(height: 44)
+        .padding(.horizontal, 8)
+        .background(
+            Color.primary.opacity(hour.precipitationChance > 0 ? 0.10 : 0)
+        )
+        .symbolRenderingMode(.hierarchical)
     }
 }

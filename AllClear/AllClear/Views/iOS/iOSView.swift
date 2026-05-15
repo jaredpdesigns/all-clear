@@ -104,23 +104,13 @@ struct iOSView: View {
         }
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {
-                Button {
-                    filterMode = .selectedHours
+                Picker(selection: $filterMode) {
+                    Label("Selected Hours", systemImage: "clock.badge.checkmark")
+                        .tag(HourFilterMode.selectedHours)
+                    Label("All Hours", systemImage: "list.bullet")
+                        .tag(HourFilterMode.allHours)
                 } label: {
-                    if filterMode == .selectedHours {
-                        Label("Selected Hours", systemImage: "checkmark")
-                    } else {
-                        Text("Selected Hours")
-                    }
-                }
-                Button {
-                    filterMode = .allHours
-                } label: {
-                    if filterMode == .allHours {
-                        Label("All Hours", systemImage: "checkmark")
-                    } else {
-                        Text("All Hours")
-                    }
+                    EmptyView()
                 }
             } label: {
                 Image(systemName: "line.3.horizontal.decrease")
