@@ -32,8 +32,8 @@
               }
             }
           ],
-          "image-name" : "sun-center.svg",
-          "name" : "sun-center"
+          "image-name" : "center.svg",
+          "name" : "center"
         },
         {
           "fill-specializations" : [
@@ -55,8 +55,8 @@
               }
             }
           ],
-          "image-name" : "sun-rays-half.svg",
-          "name" : "sun-rays-half",
+          "image-name" : "rays-half.svg",
+          "name" : "rays-half",
           "opacity" : 0.5
         },
         {
@@ -79,8 +79,8 @@
               }
             }
           ],
-          "image-name" : "sun-rays.svg",
-          "name" : "sun-rays",
+          "image-name" : "rays.svg",
+          "name" : "rays",
           "opacity" : 0.75
         }
       ],
