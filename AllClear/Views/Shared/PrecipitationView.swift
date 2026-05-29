@@ -80,6 +80,7 @@ struct PrecipitationView: View {
 
 private struct HourRow: View {
     @Environment(\.locale) private var locale
+    @AppStorage("rainThresholdPercent") private var rainThresholdPercent: Double = 5
     let hour: HourWeather
     
     private var uses24HourClock: Bool {
@@ -137,13 +138,36 @@ private struct HourRow: View {
         return hour.wind.speed.converted(to: preferredUnit)
     }
     
+    private var isRaining: Bool {
+        hour.precipitationChance >= rainThresholdPercent / 100
+    }
+    
+    @AppStorage("AppleAccentColor", store: UserDefaults(suiteName: "kCFPreferencesAnyApplication"))
+    private var appleAccentColor: Int?
+    
+    private var tintColor: Color {
+#if os(macOS)
+        if appleAccentColor == nil {
+            return .indigo
+        } else {
+            return .accentColor
+        }
+#else
+        return .indigo
+#endif
+    }
+    
     var body: some View {
         HStack(spacing: 16) {
             HStack(spacing: 16) {
-                Image(systemName: hour.precipitationChance > 0  ? "\(hour.symbolName).fill" : hour.symbolName)
+                Image(systemName: isRaining  ? "\(hour.symbolName).fill" : hour.symbolName)
                     .font(.title2)
                     .frame(width: 24)
-                    .symbolRenderingMode(.hierarchical)
+                    .symbolRenderingMode(isRaining  ? .palette : .hierarchical)
+                    .foregroundStyle(
+                        isRaining ? AnyShapeStyle(tintColor) : AnyShapeStyle(.primary),
+                        isRaining ? AnyShapeStyle(.secondary) : AnyShapeStyle(.clear)
+                    )
                 
                 Text(hour.date, formatter: hourFormatter)
                     .monospacedDigit()
@@ -164,8 +188,8 @@ private struct HourRow: View {
             Label {
                 Text("\(Int(hour.precipitationChance * 100))%")
             } icon: {
-                Image(systemName: hour.precipitationChance > 0 ? "drop.fill" : "drop")
-                    .foregroundStyle(.secondary)
+                Image(systemName: isRaining ? "drop.fill" : "drop")
+                    .foregroundStyle(isRaining ? AnyShapeStyle(tintColor) : AnyShapeStyle(.secondary))
             }
             .monospacedDigit()
             .frame(width: 72, alignment: .leading)
@@ -173,7 +197,7 @@ private struct HourRow: View {
         .frame(height: 44)
         .padding(.horizontal, 8)
         .background(
-            Color.primary.opacity(hour.precipitationChance > 0 ? 0.25 : 0)
+            tintColor.opacity(isRaining ? 0.10 : 0)
         )
     }
 }

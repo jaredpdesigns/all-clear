@@ -2,7 +2,9 @@
   "color-space-for-untagged-svg-colors" : "display-p3",
   "fill-specializations" : [
     {
-      "value" : "system-light"
+      "value" : {
+        "automatic-gradient" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
+      }
     },
     {
       "appearance" : "dark",
@@ -16,13 +18,13 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "extended-gray:0.00000,1.00000"
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
               }
             },
             {
@@ -39,13 +41,13 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "extended-gray:0.00000,1.00000"
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
               }
             },
             {
@@ -63,13 +65,13 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "extended-gray:0.00000,1.00000"
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
               }
             },
             {

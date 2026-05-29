@@ -25,6 +25,21 @@ struct macOSView: View {
         || locationService.location != nil
     }
     
+    @AppStorage("AppleAccentColor", store: UserDefaults(suiteName: "kCFPreferencesAnyApplication"))
+    private var appleAccentColor: Int?
+    
+    private var tintColor: Color {
+#if os(macOS)
+        if appleAccentColor == nil {
+            return .indigo
+        } else {
+            return .accentColor
+        }
+#else
+        return .indigo
+#endif
+    }
+    
     var body: some View {
         Group {
             if weatherService.isLoading {
@@ -50,6 +65,7 @@ struct macOSView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding()
+                    .tint(tintColor)
                     
                     ScrollView {
                         PrecipitationView(
@@ -78,24 +94,15 @@ struct macOSView: View {
             }
             ToolbarItem(placement: .automatic) {
                 Menu {
-                    Button {
-                        filterMode = .selectedHours
+                    Picker(selection: $filterMode) {
+                        Label("Selected Hours", systemImage: "clock.badge.checkmark")
+                            .tag(HourFilterMode.selectedHours)
+                        Label("All Hours", systemImage: "list.bullet")
+                            .tag(HourFilterMode.allHours)
                     } label: {
-                        if filterMode == .selectedHours {
-                            Label("Selected Hours", systemImage: "checkmark")
-                        } else {
-                            Text("Selected Hours")
-                        }
+                        EmptyView()
                     }
-                    Button {
-                        filterMode = .allHours
-                    } label: {
-                        if filterMode == .allHours {
-                            Label("All Hours", systemImage: "checkmark")
-                        } else {
-                            Text("All Hours")
-                        }
-                    }
+                    .pickerStyle(.inline)
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
                 }
