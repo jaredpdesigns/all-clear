@@ -1,9 +1,12 @@
 {
   "color-space-for-untagged-svg-colors" : "display-p3",
+  "features" : [
+    "refractivity"
+  ],
   "fill-specializations" : [
     {
       "value" : {
-        "automatic-gradient" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
+        "solid" : "extended-gray:1.00000,1.00000"
       }
     },
     {
@@ -13,18 +16,19 @@
   ],
   "groups" : [
     {
+      "blur-material" : 0.5,
       "layers" : [
         {
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-gray:0.00000,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             },
             {
@@ -41,13 +45,13 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-gray:0.00000,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             },
             {
@@ -65,13 +69,13 @@
           "fill-specializations" : [
             {
               "value" : {
-                "solid" : "extended-gray:1.00000,1.00000"
+                "solid" : "extended-gray:0.00000,1.00000"
               }
             },
             {
               "appearance" : "dark",
               "value" : {
-                "solid" : "extended-srgb:0.38039,0.33333,0.96078,1.00000"
+                "solid" : "extended-gray:1.00000,1.00000"
               }
             },
             {
@@ -86,6 +90,11 @@
           "opacity" : 0.75
         }
       ],
+      "refractivity" : {
+        "depth" : 0,
+        "enabled" : true,
+        "strength" : 1
+      },
       "shadow" : {
         "kind" : "neutral",
         "opacity" : 0.5

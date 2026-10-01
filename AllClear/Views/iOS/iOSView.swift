@@ -46,6 +46,7 @@ struct iOSView: View {
         .sheet(isPresented: $showingHourPicker) {
             HourPickerSheet(selectedHours: $selectedHours)
                 .presentationDetents([.medium, .large])
+                .background(Color(.systemBackground))
         }
         .onAppear {
             if selectedHours.count == 24 {
@@ -58,7 +59,6 @@ struct iOSView: View {
             }
             filterMode = newValue.count == 24 ? .allHours : .selectedHours
         }
-        .tint(.primary)
     }
     
     @ViewBuilder
@@ -67,14 +67,14 @@ struct iOSView: View {
             WeatherLoadingView(attribution: weatherService.attribution)
         } else if let error = weatherService.errorMessage ?? locationService.errorMessage {
             WeatherErrorView(error: error) {
-                locationService.requestLocation()
+                Task { await weatherService.refresh(using: locationService) }
             }
         } else if weatherService.currentWeather == nil {
             if isRequestingLocation {
                 WeatherLoadingView(attribution: weatherService.attribution)
             } else {
                 LocationRequestView {
-                    locationService.requestLocation()
+                    Task { await weatherService.refresh(using: locationService) }
                 }
             }
         } else if let forecast = weatherService.dayForecast(for: day) {
@@ -84,8 +84,12 @@ struct iOSView: View {
                     dayForecast: forecast,
                     hours: filteredHours(for: day),
                     date: day.date,
-                    location: locationService.location
+                    location: locationService.location,
+                    locationName: locationService.locationName
                 )
+            }
+            .refreshable {
+                await weatherService.refresh(using: locationService)
             }
         } else {
             ForecastUnavailableView(day: day)
@@ -105,10 +109,21 @@ struct iOSView: View {
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {
                 Picker(selection: $filterMode) {
-                    Label("Selected Hours", systemImage: "clock.badge.checkmark")
-                        .tag(HourFilterMode.selectedHours)
-                    Label("All Hours", systemImage: "list.bullet")
-                        .tag(HourFilterMode.allHours)
+                    Label {
+                        Text("Selected Hours")
+                    } icon: {
+                        Image(systemName: "clock.badge.checkmark")
+                            .foregroundStyle(.secondary)
+                    }
+                    .tag(HourFilterMode.selectedHours)
+                    
+                    Label {
+                        Text("All Hours")
+                    } icon: {
+                        Image(systemName: "list.bullet")
+                            .foregroundStyle(.secondary)
+                    }
+                    .tag(HourFilterMode.allHours)
                 } label: {
                     EmptyView()
                 }

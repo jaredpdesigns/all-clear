@@ -276,6 +276,7 @@
 				INFOPLIST_FILE = AllClear/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "All Clear";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather";
+				INFOPLIST_KEY_NSLocationUsageDescription = "All Clear needs your location to provide accurate precipitation data for your area.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "All Clear needs your location to provide accurate precipitation data for your area.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
@@ -327,6 +328,7 @@
 				INFOPLIST_FILE = AllClear/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "All Clear";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.weather";
+				INFOPLIST_KEY_NSLocationUsageDescription = "All Clear needs your location to provide accurate precipitation data for your area.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "All Clear needs your location to provide accurate precipitation data for your area.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;

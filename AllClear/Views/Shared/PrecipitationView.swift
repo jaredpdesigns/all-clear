@@ -16,14 +16,17 @@ enum ForecastDay: String, CaseIterable {
 }
 
 struct PrecipitationView: View {
+    @Environment(\.locale) private var locale
     var currentWeather: CurrentWeather?
     let dayForecast: DayWeather
     let hours: [HourWeather]
     let date: Date
     let location: CLLocation?
+    let locationName: String?
     
     private var temperatureFormat: Measurement<UnitTemperature>.FormatStyle {
         .measurement(width: .abbreviated, usage: .weather, numberFormatStyle: .number.precision(.fractionLength(0)))
+        .locale(locale)
     }
     
     var body: some View {
@@ -40,6 +43,20 @@ struct PrecipitationView: View {
     
     private var conditionsSection: some View {
         VStack(alignment: .leading, spacing: 8) {
+            if let locationName {
+                Label {
+                    Text(locationName)
+                } icon: {
+                    Image(systemName: "location.fill")
+                        .foregroundStyle(.secondary)
+                }
+                .font(.subheadline.weight(.medium))
+                .lineLimit(1)
+                .padding(4)
+                .padding(.trailing, 6)
+                .background(Capsule().fill(Color("SecondaryBackground")))
+            }
+            
             Text(date, format: .dateTime.weekday(.wide).month(.wide).day())
                 .foregroundStyle(.secondary)
             
@@ -49,6 +66,7 @@ struct PrecipitationView: View {
                         .formatted(temperatureFormat)
                 )
                 .font(.system(size: 48))
+                .monospacedDigit()
             }
             
             HStack(spacing: 16) {
@@ -56,6 +74,7 @@ struct PrecipitationView: View {
                 Text("L: \(dayForecast.lowTemperature.formatted(temperatureFormat))")
             }
             .foregroundStyle(.secondary)
+            .monospacedDigit()
         }
     }
     
@@ -142,32 +161,14 @@ private struct HourRow: View {
         hour.precipitationChance >= rainThresholdPercent / 100
     }
     
-    @AppStorage("AppleAccentColor", store: UserDefaults(suiteName: "kCFPreferencesAnyApplication"))
-    private var appleAccentColor: Int?
-    
-    private var tintColor: Color {
-#if os(macOS)
-        if appleAccentColor == nil {
-            return .indigo
-        } else {
-            return .accentColor
-        }
-#else
-        return .indigo
-#endif
-    }
-    
     var body: some View {
         HStack(spacing: 16) {
             HStack(spacing: 16) {
                 Image(systemName: isRaining  ? "\(hour.symbolName).fill" : hour.symbolName)
                     .font(.title2)
                     .frame(width: 24)
-                    .symbolRenderingMode(isRaining  ? .palette : .hierarchical)
-                    .foregroundStyle(
-                        isRaining ? AnyShapeStyle(tintColor) : AnyShapeStyle(.primary),
-                        isRaining ? AnyShapeStyle(.secondary) : AnyShapeStyle(.clear)
-                    )
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(isRaining ? Color("TextColor") : .primary)
                 
                 Text(hour.date, formatter: hourFormatter)
                     .monospacedDigit()
@@ -189,15 +190,14 @@ private struct HourRow: View {
                 Text("\(Int(hour.precipitationChance * 100))%")
             } icon: {
                 Image(systemName: isRaining ? "drop.fill" : "drop")
-                    .foregroundStyle(isRaining ? AnyShapeStyle(tintColor) : AnyShapeStyle(.secondary))
+                    .foregroundStyle(isRaining ? Color("TextColor") : .secondary)
             }
             .monospacedDigit()
             .frame(width: 72, alignment: .leading)
         }
         .frame(height: 44)
         .padding(.horizontal, 8)
-        .background(
-            tintColor.opacity(isRaining ? 0.10 : 0)
-        )
+        .background(isRaining ? Color("AccentColor") : .clear)
+        .foregroundStyle(isRaining ? Color("TextColor") : .primary)
     }
 }

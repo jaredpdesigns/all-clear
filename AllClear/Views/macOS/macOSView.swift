@@ -25,35 +25,20 @@ struct macOSView: View {
         || locationService.location != nil
     }
     
-    @AppStorage("AppleAccentColor", store: UserDefaults(suiteName: "kCFPreferencesAnyApplication"))
-    private var appleAccentColor: Int?
-    
-    private var tintColor: Color {
-#if os(macOS)
-        if appleAccentColor == nil {
-            return .indigo
-        } else {
-            return .accentColor
-        }
-#else
-        return .indigo
-#endif
-    }
-    
     var body: some View {
         Group {
             if weatherService.isLoading {
                 WeatherLoadingView(attribution: weatherService.attribution)
             } else if let error = weatherService.errorMessage ?? locationService.errorMessage {
                 WeatherErrorView(error: error) {
-                    locationService.requestLocation()
+                    Task { await weatherService.refresh(using: locationService) }
                 }
             } else if weatherService.currentWeather == nil {
                 if isRequestingLocation {
                     WeatherLoadingView(attribution: weatherService.attribution)
                 } else {
                     LocationRequestView {
-                        locationService.requestLocation()
+                        Task { await weatherService.refresh(using: locationService) }
                     }
                 }
             } else if let forecast = weatherService.dayForecast(for: selectedDay) {
@@ -65,7 +50,6 @@ struct macOSView: View {
                     }
                     .pickerStyle(.segmented)
                     .padding()
-                    .tint(tintColor)
                     
                     ScrollView {
                         PrecipitationView(
@@ -73,7 +57,8 @@ struct macOSView: View {
                             dayForecast: forecast,
                             hours: filteredHours,
                             date: selectedDay.date,
-                            location: locationService.location
+                            location: locationService.location,
+                            locationName: locationService.locationName
                         )
                         .frame(maxWidth: 600)
                     }
@@ -106,6 +91,16 @@ struct macOSView: View {
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
                 }
+            }
+            ToolbarItem(placement: .automatic) {
+                Button {
+                    Task { await weatherService.refresh(using: locationService) }
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .disabled(weatherService.isLoading)
+                .help("Refresh Weather")
+                .keyboardShortcut("r", modifiers: .command)
             }
         }
         .sheet(isPresented: $showingHourPicker) {
