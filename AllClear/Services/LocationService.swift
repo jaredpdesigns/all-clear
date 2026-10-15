@@ -167,8 +167,11 @@ final class LocationService: NSObject {
     
     private func saveLocation(_ location: CLLocation) {
         let savedLocation = SavedLocation(location: location, name: locationName)
-        guard let data = try? JSONEncoder().encode(savedLocation) else { return }
+        guard let data = try? JSONEncoder().encode(savedLocation) else {
+            return
+        }
         UserDefaults.standard.set(data, forKey: Self.savedLocationKey)
+        SharedSettings.saveLocationData(data)
     }
     
     private static func loadSavedLocation() -> SavedLocation? {

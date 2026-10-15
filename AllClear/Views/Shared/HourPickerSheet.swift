@@ -2,15 +2,16 @@ import SwiftUI
 
 struct HourPickerSheet: View {
     @Binding var selectedHours: Set<Int>
-    @AppStorage("rainThresholdPercent") private var rainThresholdPercent: Double = 5
+    @AppStorage("rainThresholdPercent", store: SharedSettings.defaults)
+    private var rainThresholdPercent: Double = 5
     @Environment(\.dismiss) private var dismiss
-
+    
     @FocusState private var focusedHour: Int?
-
+    
     @State private var rawSliderValue: Double = 5.0
-
+    
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 12), count: 4)
-
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -21,7 +22,7 @@ struct HourPickerSheet: View {
                             let symbolName = isSelected ? "checkmark.circle.fill" : "circle.fill"
                             Button {
                                 focusedHour = hour
-
+                                
                                 if isSelected {
                                     selectedHours.remove(hour)
                                 } else {
@@ -54,9 +55,9 @@ struct HourPickerSheet: View {
                     }
                     .padding()
                 }
-
+                
                 Divider()
-
+                
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("Rain threshold")
@@ -67,6 +68,7 @@ struct HourPickerSheet: View {
                     Slider(value: $rawSliderValue, in: 0.0...100.0)
                         .onChange(of: rawSliderValue) { _, newValue in
                             rainThresholdPercent = newValue.rounded()
+                            SharedSettings.saveRainThreshold(rainThresholdPercent)
                         }
                 }
                 .padding()
@@ -97,7 +99,7 @@ struct HourPickerSheet: View {
         }
         .onAppear {
             rawSliderValue = rainThresholdPercent
-
+            
             DispatchQueue.main.async {
                 if let firstSelected = (0..<24).first(where: { selectedHours.contains($0) }) {
                     focusedHour = firstSelected
@@ -107,7 +109,7 @@ struct HourPickerSheet: View {
             }
         }
     }
-
+    
     private func label(for hour: Int) -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "h a"

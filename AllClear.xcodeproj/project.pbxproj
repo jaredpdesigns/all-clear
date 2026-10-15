@@ -6,17 +6,60 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A10000000000000000000002 /* All Clear Widgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* All Clear Widgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A10000000000000000000006 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 61BD89E72F4E56D4005EB8B6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A10000000000000000000004;
+			remoteInfo = AllClearWidgetsExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A10000000000000000000008 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A10000000000000000000002 /* All Clear Widgets.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		61BD89EF2F4E56D4005EB8B6 /* All Clear • Rain Free.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "All Clear • Rain Free.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A10000000000000000000001 /* All Clear Widgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "All Clear Widgets.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		001AE5D930817F690018BE34 /* Exceptions for "AllClear" folder in "AllClearWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Views/Shared/RainForecastHourRow.swift,
+			);
+			target = A10000000000000000000004 /* AllClearWidgetsExtension */;
+		};
 		00EB34FD2FB2B0F900A47F38 /* Exceptions for "AllClear" folder in "AllClear" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
 			target = 61BD89EE2F4E56D4005EB8B6 /* AllClear */;
+		};
+		A10000000000000000000003 /* Exceptions for "AllClearWidgets" folder in "AllClearWidgetsExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A10000000000000000000004 /* AllClearWidgetsExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -25,14 +68,30 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				00EB34FD2FB2B0F900A47F38 /* Exceptions for "AllClear" folder in "AllClear" target */,
+				001AE5D930817F690018BE34 /* Exceptions for "AllClear" folder in "AllClearWidgetsExtension" target */,
 			);
 			path = AllClear;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000005 /* AllClearWidgets */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A10000000000000000000003 /* Exceptions for "AllClearWidgets" folder in "AllClearWidgetsExtension" target */,
+			);
+			path = AllClearWidgets;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		61BD89EC2F4E56D4005EB8B6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000007 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -46,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				61BD89F12F4E56D4005EB8B6 /* AllClear */,
+				A10000000000000000000005 /* AllClearWidgets */,
 				61BD89F02F4E56D4005EB8B6 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +114,7 @@
 			isa = PBXGroup;
 			children = (
 				61BD89EF2F4E56D4005EB8B6 /* All Clear • Rain Free.app */,
+				A10000000000000000000001 /* All Clear Widgets.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -68,10 +129,12 @@
 				61BD89EB2F4E56D4005EB8B6 /* Sources */,
 				61BD89EC2F4E56D4005EB8B6 /* Frameworks */,
 				61BD89ED2F4E56D4005EB8B6 /* Resources */,
+				A10000000000000000000008 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A10000000000000000000009 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				61BD89F12F4E56D4005EB8B6 /* AllClear */,
@@ -83,6 +146,28 @@
 			productReference = 61BD89EF2F4E56D4005EB8B6 /* All Clear • Rain Free.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A10000000000000000000004 /* AllClearWidgetsExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1000000000000000000000A /* Build configuration list for PBXNativeTarget "AllClearWidgetsExtension" */;
+			buildPhases = (
+				A1000000000000000000000B /* Sources */,
+				A10000000000000000000007 /* Frameworks */,
+				A1000000000000000000000C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A10000000000000000000005 /* AllClearWidgets */,
+			);
+			name = AllClearWidgetsExtension;
+			packageProductDependencies = (
+			);
+			productName = "All Clear Widgets";
+			productReference = A10000000000000000000001 /* All Clear Widgets.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -91,10 +176,13 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2620;
-				LastUpgradeCheck = 2640;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					61BD89EE2F4E56D4005EB8B6 = {
 						CreatedOnToolsVersion = 26.2;
+					};
+					A10000000000000000000004 = {
+						CreatedOnToolsVersion = 27.0;
 					};
 				};
 			};
@@ -113,12 +201,20 @@
 			projectRoot = "";
 			targets = (
 				61BD89EE2F4E56D4005EB8B6 /* AllClear */,
+				A10000000000000000000004 /* AllClearWidgetsExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		61BD89ED2F4E56D4005EB8B6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A1000000000000000000000C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -135,7 +231,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A1000000000000000000000B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A10000000000000000000009 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A10000000000000000000004 /* AllClearWidgetsExtension */;
+			targetProxy = A10000000000000000000006 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		61BD89F82F4E56D6005EB8B6 /* Debug */ = {
@@ -292,7 +403,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaredpdesigns.AllClear;
 				PRODUCT_NAME = "All Clear • Rain Free";
 				REGISTER_APP_GROUPS = YES;
@@ -344,7 +455,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jaredpdesigns.AllClear;
 				PRODUCT_NAME = "All Clear • Rain Free";
 				REGISTER_APP_GROUPS = YES;
@@ -359,6 +470,66 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Release;
+		};
+		A1000000000000000000000D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = AllClearWidgets/AllClearWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2U6Q2LWV8X;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllClearWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jaredpdesigns.AllClear.Widgets;
+				PRODUCT_NAME = "All Clear Widgets";
+				REGISTER_APP_GROUPS = YES;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A1000000000000000000000E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = AllClearWidgets/AllClearWidgets.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 2U6Q2LWV8X;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AllClearWidgets/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jaredpdesigns.AllClear.Widgets;
+				PRODUCT_NAME = "All Clear Widgets";
+				REGISTER_APP_GROUPS = YES;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -379,6 +550,15 @@
 			buildConfigurations = (
 				61BD89FB2F4E56D6005EB8B6 /* Debug */,
 				61BD89FC2F4E56D6005EB8B6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1000000000000000000000A /* Build configuration list for PBXNativeTarget "AllClearWidgetsExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1000000000000000000000D /* Debug */,
+				A1000000000000000000000E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

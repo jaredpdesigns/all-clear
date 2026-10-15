@@ -6,14 +6,9 @@ struct macOSView: View {
     @Environment(WeatherDataService.self) private var weatherService
     
     @State private var selectedDay: ForecastDay = .today
-    @State private var selectedHours: Set<Int> = {
-        if let data = UserDefaults.standard.data(forKey: "selectedHours"),
-           let hours = try? JSONDecoder().decode(Set<Int>.self, from: data) {
-            return hours
-        }
-        return Set(0...23)
-    }()
-    @AppStorage("filterMode") private var filterMode: HourFilterMode = .selectedHours
+    @State private var selectedHours = SharedSettings.selectedHours()
+    @AppStorage(SharedSettings.filterModeKey, store: SharedSettings.defaults)
+    private var filterMode: HourFilterMode = .selectedHours
     @State private var showingHourPicker = false
     
     private var hasCustomSelection: Bool {
@@ -113,10 +108,11 @@ struct macOSView: View {
             }
         }
         .onChange(of: selectedHours) { _, newValue in
-            if let data = try? JSONEncoder().encode(newValue) {
-                UserDefaults.standard.set(data, forKey: "selectedHours")
-            }
+            SharedSettings.saveSelectedHours(newValue)
             filterMode = newValue.count == 24 ? .allHours : .selectedHours
+        }
+        .onChange(of: filterMode) { _, newValue in
+            SharedSettings.saveFilterMode(newValue)
         }
     }
     
