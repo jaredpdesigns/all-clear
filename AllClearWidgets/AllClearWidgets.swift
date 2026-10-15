@@ -12,7 +12,7 @@ struct RainForecastEntry: TimelineEntry {
     let isUsingSelectedHours: Bool
     let rainThresholdPercent: Double
     let errorMessage: String?
-    
+
     var averageChance: Double? {
         guard !hours.isEmpty else { return nil }
         return hours.map(\.precipitationChance).reduce(0, +) / Double(hours.count)
@@ -40,13 +40,13 @@ struct RainForecastProvider: TimelineProvider {
             errorMessage: nil
         )
     }
-    
+
     func getSnapshot(in context: Context, completion: @escaping (RainForecastEntry) -> Void) {
         Task {
             completion(await makeEntry())
         }
     }
-    
+
     func getTimeline(in context: Context, completion: @escaping (Timeline<RainForecastEntry>) -> Void) {
         Task {
             let entry = await makeEntry()
@@ -54,7 +54,7 @@ struct RainForecastProvider: TimelineProvider {
             completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
         }
     }
-    
+
     private func makeEntry() async -> RainForecastEntry {
         guard let defaults = UserDefaults(suiteName: appGroupIdentifier),
               let locationData = defaults.data(forKey: "savedLocation") else {
@@ -66,7 +66,7 @@ struct RainForecastProvider: TimelineProvider {
                 errorMessage: "Open All Clear to set your location."
             )
         }
-        
+
         do {
             let savedLocation = try JSONDecoder().decode(SharedSavedLocation.self, from: locationData)
             let location = CLLocation(
@@ -82,7 +82,7 @@ struct RainForecastProvider: TimelineProvider {
             let rainThresholdPercent = defaults.object(forKey: "rainThresholdPercent") as? Double ?? 5
             let isUsingSelectedHours = filterMode != "All Hours" && selectedHours.count < 24
             let displayHours: [HourWeather]
-            
+
             if isUsingSelectedHours {
                 displayHours = upcomingHours.filter {
                     selectedHours.contains(Calendar.current.component(.hour, from: $0.date))
@@ -90,7 +90,7 @@ struct RainForecastProvider: TimelineProvider {
             } else {
                 displayHours = upcomingHours
             }
-            
+
             return RainForecastEntry(
                 date: now,
                 hours: displayHours.map {
@@ -110,7 +110,7 @@ struct RainForecastProvider: TimelineProvider {
             )
         }
     }
-    
+
     private static func selectedHours(from defaults: UserDefaults) -> Set<Int> {
         guard let data = defaults.data(forKey: selectedHoursKey),
               let hours = try? JSONDecoder().decode(Set<Int>.self, from: data) else {
@@ -138,9 +138,9 @@ struct RainForecastWidget: Widget {
         StaticConfiguration(kind: "AllClearRainForecast", provider: RainForecastProvider()) { entry in
             RainForecastView(entry: entry)
         }
-        .configurationDisplayName("Rain Forecast")
+        .configurationDisplayName("Chance of Rain")
         .description("See the chance of rain during your selected hours.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
@@ -148,11 +148,11 @@ private struct RainForecastView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.colorScheme) private var colorScheme
     let entry: RainForecastEntry
-    
+
     var body: some View {
         Group {
             if (entry.errorMessage != nil) {
-                ContentUnavailableView("Forecast Unavailable", systemImage: "cloud", description: Text("Please refresh your location"))
+                ContentUnavailableView("Forecast Unavailable", systemImage: "cloud.rain", description: Text("Please refresh your location"))
             } else if entry.hours.isEmpty {
                 ContentUnavailableView(
                     "No Selected Hours",
@@ -165,7 +165,7 @@ private struct RainForecastView: View {
                     smallForecast
                 case .systemMedium:
                     mediumForecast
-                case .systemLarge, .systemExtraLarge:
+                case .systemLarge:
                     largeForecast
                 default:
                     smallForecast
@@ -176,7 +176,7 @@ private struct RainForecastView: View {
             Color.clear
         }
     }
-    
+
     private var smallForecast: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Average Rain")
@@ -195,7 +195,7 @@ private struct RainForecastView: View {
             Spacer()
         }.frame(maxWidth: .infinity)
     }
-    
+
     private var mediumForecast: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Chance of Rain")
@@ -208,7 +208,7 @@ private struct RainForecastView: View {
             .frame(maxWidth: .infinity)
         }
     }
-    
+
     private var largeForecast: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Chance of Rain")
@@ -229,7 +229,7 @@ private struct RainForecastView: View {
             Spacer()
         }
     }
-    
+
     private var hourRange: String {
         guard let firstHour = entry.hours.first,
               let lastHour = entry.hours.last,
@@ -242,12 +242,12 @@ private struct RainForecastView: View {
         formatter.timeStyle = .short
         return formatter.string(from: firstHour.date, to: endDate)
     }
-    
+
     private func hourColumn(_ hour: RainForecastHourData) -> some View {
         let isRaining = hour.precipitationChance >= entry.rainThresholdPercent / 100
         let rainForeground: Color = colorScheme == .dark ? .black : .white
         let rainBackground: Color = colorScheme == .dark ? .white : .black
-        
+
         return VStack(spacing: 4) {
             Text(hour.date, format: .dateTime.hour())
                 .font(.caption)

@@ -483,6 +483,7 @@
 				DEVELOPMENT_TEAM = 2U6Q2LWV8X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AllClearWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "All Clear";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -513,6 +514,7 @@
 				DEVELOPMENT_TEAM = 2U6Q2LWV8X;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AllClearWidgets/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "All Clear";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
