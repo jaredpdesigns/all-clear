@@ -46,6 +46,7 @@ final class WeatherDataService {
         Task { await locationService.updateLocationName(for: location) }
         
         do {
+            attribution = try await service.attribution
             let calendar = Calendar.current
             let startDate = calendar.startOfDay(for: .now)
             guard let endDate = calendar.date(byAdding: .day, value: 2, to: startDate) else {
@@ -62,7 +63,6 @@ final class WeatherDataService {
             self.currentWeather = currentWeather
             self.dailyForecast = Array(dailyForecast.prefix(2))
             self.hourlyForecast = Array(hourlyForecast)
-            attribution = try await service.attribution
         } catch {
             errorMessage = error.localizedDescription
         }

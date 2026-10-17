@@ -53,7 +53,8 @@ struct macOSView: View {
                             hours: filteredHours,
                             date: selectedDay.date,
                             location: locationService.location,
-                            locationName: locationService.locationName
+                            locationName: locationService.locationName,
+                            attribution: weatherService.attribution
                         )
                         .frame(maxWidth: 600)
                     }

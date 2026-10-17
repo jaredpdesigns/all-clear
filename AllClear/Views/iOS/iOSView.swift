@@ -25,16 +25,20 @@ struct iOSView: View {
         TabView(selection: $selectedTab) {
             Tab("Today", systemImage: "calendar", value: ForecastDay.today) {
                 NavigationStack {
-                    dayContent(for: .today)
-                        .navigationTitle("Today")
-                        .toolbar { toolbarItems }
+                    ScrollViewReader { proxy in
+                        dayContent(for: .today, scrollProxy: proxy)
+                            .navigationTitle("Today")
+                            .toolbar { toolbarItems }
+                    }
                 }
             }
             Tab("Tomorrow", systemImage: "calendar.badge.clock", value: ForecastDay.tomorrow) {
                 NavigationStack {
-                    dayContent(for: .tomorrow)
-                        .navigationTitle("Tomorrow")
-                        .toolbar { toolbarItems }
+                    ScrollViewReader { proxy in
+                        dayContent(for: .tomorrow, scrollProxy: proxy)
+                            .navigationTitle("Tomorrow")
+                            .toolbar { toolbarItems }
+                    }
                 }
             }
         }
@@ -58,7 +62,7 @@ struct iOSView: View {
     }
     
     @ViewBuilder
-    private func dayContent(for day: ForecastDay) -> some View {
+    private func dayContent(for day: ForecastDay, scrollProxy: ScrollViewProxy) -> some View {
         if weatherService.isLoading {
             WeatherLoadingView(attribution: weatherService.attribution)
         } else if let error = weatherService.errorMessage ?? locationService.errorMessage {
@@ -81,11 +85,16 @@ struct iOSView: View {
                     hours: filteredHours(for: day),
                     date: day.date,
                     location: locationService.location,
-                    locationName: locationService.locationName
+                    locationName: locationService.locationName,
+                    attribution: weatherService.attribution
                 )
+                .id("forecastTop")
             }
             .refreshable {
                 await weatherService.refresh(using: locationService)
+                withAnimation {
+                    scrollProxy.scrollTo("forecastTop", anchor: .top)
+                }
             }
         } else {
             ForecastUnavailableView(day: day)

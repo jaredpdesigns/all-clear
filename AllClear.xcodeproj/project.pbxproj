@@ -43,7 +43,16 @@
 		001AE5D930817F690018BE34 /* Exceptions for "AllClear" folder in "AllClearWidgetsExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Services/LocationService.swift,
+				Services/SharedSettings.swift,
+				Services/WeatherDataService.swift,
+				Views/Shared/HourFilterMode.swift,
+				Views/Shared/HourPickerSheet.swift,
+				Views/Shared/PrecipitationView.swift,
 				Views/Shared/RainForecastHourRow.swift,
+				Views/Shared/WeatherAttributionView.swift,
+				Views/Shared/WeatherLoadingView.swift,
+				Views/Shared/WeatherStatusViews.swift,
 			);
 			target = A10000000000000000000004 /* AllClearWidgetsExtension */;
 		};

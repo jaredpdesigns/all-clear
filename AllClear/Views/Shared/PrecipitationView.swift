@@ -25,6 +25,7 @@ struct PrecipitationView: View {
     let date: Date
     let location: CLLocation?
     let locationName: String?
+    let attribution: WeatherAttribution?
     
     private var temperatureFormat: Measurement<UnitTemperature>.FormatStyle {
         .measurement(width: .abbreviated, usage: .weather, numberFormatStyle: .number.precision(.fractionLength(0)))
@@ -32,13 +33,15 @@ struct PrecipitationView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
+        VStack(alignment: .leading, spacing: 16) {
             conditionsSection
             VStack(spacing: 0) {
                 Divider()
                 hourlySection
             }
-            
+            if let attribution {
+                WeatherAttributionView(attribution: attribution)
+            }
         }
         .padding()
     }

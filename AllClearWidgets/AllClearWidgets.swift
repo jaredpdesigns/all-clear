@@ -12,6 +12,7 @@ struct RainForecastEntry: TimelineEntry {
     let isUsingSelectedHours: Bool
     let rainThresholdPercent: Double
     let errorMessage: String?
+    let attribution: WeatherAttribution?
 
     var averageChance: Double? {
         guard !hours.isEmpty else { return nil }
@@ -37,7 +38,8 @@ struct RainForecastProvider: TimelineProvider {
             },
             isUsingSelectedHours: true,
             rainThresholdPercent: 5,
-            errorMessage: nil
+            errorMessage: nil,
+            attribution: nil
         )
     }
 
@@ -63,11 +65,13 @@ struct RainForecastProvider: TimelineProvider {
                 hours: [],
                 isUsingSelectedHours: false,
                 rainThresholdPercent: 5,
-                errorMessage: "Open All Clear to set your location."
+                errorMessage: "Open All Clear to set your location.",
+                attribution: nil
             )
         }
 
         do {
+            let attribution = try await WeatherService.shared.attribution
             let savedLocation = try JSONDecoder().decode(SharedSavedLocation.self, from: locationData)
             let location = CLLocation(
                 latitude: savedLocation.latitude,
@@ -98,7 +102,8 @@ struct RainForecastProvider: TimelineProvider {
                 },
                 isUsingSelectedHours: isUsingSelectedHours,
                 rainThresholdPercent: rainThresholdPercent,
-                errorMessage: nil
+                errorMessage: nil,
+                attribution: attribution
             )
         } catch {
             return RainForecastEntry(
@@ -106,7 +111,8 @@ struct RainForecastProvider: TimelineProvider {
                 hours: [],
                 isUsingSelectedHours: false,
                 rainThresholdPercent: 5,
-                errorMessage: error.localizedDescription
+                errorMessage: error.localizedDescription,
+                attribution: nil
             )
         }
     }
@@ -151,14 +157,26 @@ private struct RainForecastView: View {
 
     var body: some View {
         Group {
-            if (entry.errorMessage != nil) {
-                ContentUnavailableView("Forecast Unavailable", systemImage: "cloud.rain", description: Text("Please refresh your location"))
+            if let error = entry.errorMessage {
+                VStack(alignment: .leading, spacing: 8) {
+                    Image(systemName: "cloud.rain")
+                        .font(.headline.weight(.semibold))
+                        .symbolRenderingMode(.hierarchical)
+                    Text("Forecast Unavailable")
+                        .fontWeight(.semibold)
+                    Text(error)
+                        .font(.caption)
+                }
             } else if entry.hours.isEmpty {
-                ContentUnavailableView(
-                    "No Selected Hours",
-                    systemImage: "clock",
-                    description: Text("Choose forecast hours in All Clear.")
-                )
+                VStack(alignment: .leading, spacing: 8) {
+                    Image(systemName: "clock")
+                        .font(.headline.weight(.semibold))
+                        .symbolRenderingMode(.hierarchical)
+                    Text("No Selected Hours")
+                        .fontWeight(.semibold)
+                    Text("Choose a selection of hours to display")
+                        .font(.caption)
+                }
             } else {
                 switch family {
                 case .systemSmall:
@@ -180,7 +198,7 @@ private struct RainForecastView: View {
     private var smallForecast: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Average Rain")
-                .font(.headline)
+                .font(.headline.weight(.semibold))
             Text(hourRange)
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -227,6 +245,13 @@ private struct RainForecastView: View {
                 }
             }
             Spacer()
+        }
+    }
+
+    @ViewBuilder
+    private var attributionMark: some View {
+        if let attribution = entry.attribution {
+            WeatherAttributionView(attribution: attribution)
         }
     }
 
