@@ -44,6 +44,7 @@ struct macOSView: View {
                         }
                     }
                     .pickerStyle(.segmented)
+                    .tint(.accentColor)
                     .padding()
                     
                     ScrollView {
@@ -64,6 +65,7 @@ struct macOSView: View {
                 ForecastUnavailableView(day: selectedDay)
             }
         }
+        .containerBackground(.regularMaterial, for: .window)
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Button {
@@ -72,6 +74,7 @@ struct macOSView: View {
                     Image(systemName: "clock")
                         .symbolRenderingMode(.hierarchical)
                 }
+                .accessibilityLabel("Select forecast hours")
             }
             ToolbarItem(placement: .automatic) {
                 Menu {
@@ -87,6 +90,7 @@ struct macOSView: View {
                 } label: {
                     Image(systemName: "line.3.horizontal.decrease")
                 }
+                .accessibilityLabel("Filter forecast hours")
             }
             ToolbarItem(placement: .automatic) {
                 Button {
@@ -94,6 +98,7 @@ struct macOSView: View {
                 } label: {
                     Image(systemName: "arrow.clockwise")
                 }
+                .accessibilityLabel("Refresh weather")
                 .disabled(weatherService.isLoading)
                 .help("Refresh Weather")
                 .keyboardShortcut("r", modifiers: .command)

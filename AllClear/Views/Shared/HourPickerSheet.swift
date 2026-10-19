@@ -34,6 +34,7 @@ struct HourPickerSheet: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: 20, height: 20)
+                                        .accessibilityHidden(true)
                                         .foregroundStyle(isSelected ? Color("TextColor") : .white)
                                     Text(label(for: hour))
                                         .padding(.trailing, 4)
@@ -51,6 +52,9 @@ struct HourPickerSheet: View {
                             .background(isSelected ? Color("AccentColor") : Color("SecondaryBackground"), in: Capsule())
                             .focused($focusedHour, equals: hour)
                             .buttonStyle(.plain)
+                            .accessibilityLabel(label(for: hour))
+                            .accessibilityValue(isSelected ? "Selected" : "Not selected")
+                            .accessibilityAddTraits(isSelected ? .isSelected : [])
                         }
                     }
                     .padding()
@@ -66,6 +70,8 @@ struct HourPickerSheet: View {
                             .foregroundStyle(.secondary)
                     }
                     Slider(value: $rawSliderValue, in: 0.0...100.0)
+                        .accessibilityLabel("Rain threshold")
+                        .accessibilityValue("\(Int(rawSliderValue.rounded())) percent")
                         .onChange(of: rawSliderValue) { _, newValue in
                             rainThresholdPercent = newValue.rounded()
                             SharedSettings.saveRainThreshold(rainThresholdPercent)

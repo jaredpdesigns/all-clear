@@ -157,7 +157,6 @@ struct RainForecastWidget: Widget {
 
 private struct RainForecastView: View {
     @Environment(\.widgetFamily) private var family
-    @Environment(\.colorScheme) private var colorScheme
     let entry: RainForecastEntry
     
     var body: some View {
@@ -281,16 +280,14 @@ private struct RainForecastView: View {
     
     private func hourColumn(_ hour: RainForecastHourData) -> some View {
         let isRaining = hour.precipitationChance >= entry.rainThresholdPercent / 100
-        let rainForeground: Color = colorScheme == .dark ? .black : .white
-        let rainBackground: Color = colorScheme == .dark ? .white : .black
         
         return VStack(spacing: 4) {
             Text(hour.date, format: .dateTime.hour())
                 .font(.caption)
-                .foregroundStyle(isRaining ? rainForeground : Color.secondary)
+                .foregroundStyle(isRaining ? Color("TextColor") : Color.secondary)
             Image(systemName: hour.symbolName)
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(isRaining ? rainForeground : Color.primary)
+                .foregroundStyle(isRaining ? Color("TextColor") : Color.primary)
             Text(hour.temperature.formatted(
                 .measurement(
                     width: .abbreviated,
@@ -306,8 +303,8 @@ private struct RainForecastView: View {
         }
         .padding(8)
         .frame(maxWidth: .infinity)
-        .background(isRaining ? rainBackground : .clear)
-        .foregroundStyle(isRaining ? rainForeground : Color.primary)
+        .background(isRaining ? Color("AccentColor") : .clear)
+        .foregroundStyle(isRaining ? Color("TextColor") : Color.primary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
         .overlay {
             RoundedRectangle(cornerRadius: 8)

@@ -110,6 +110,7 @@ struct iOSView: View {
                 Image(systemName: "clock")
                     .symbolRenderingMode(.hierarchical)
             }
+            .accessibilityLabel("Select forecast hours")
         }
         ToolbarItem(placement: .navigationBarTrailing) {
             Menu {
@@ -135,6 +136,7 @@ struct iOSView: View {
             } label: {
                 Image(systemName: "line.3.horizontal.decrease")
             }
+            .accessibilityLabel("Filter forecast hours")
         }
     }
     

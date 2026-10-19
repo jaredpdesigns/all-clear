@@ -35,7 +35,6 @@ struct RainForecastHourData: Identifiable {
 
 struct RainForecastHourRow: View {
     @Environment(\.locale) private var locale
-    @Environment(\.colorScheme) private var colorScheme
     let hour: RainForecastHourData
     let rainThresholdPercent: Double
     
@@ -87,14 +86,6 @@ struct RainForecastHourRow: View {
         hour.precipitationChance >= rainThresholdPercent / 100
     }
     
-    private var rainForeground: Color {
-        colorScheme == .dark ? .black : .white
-    }
-    
-    private var rainBackground: Color {
-        colorScheme == .dark ? .white : .black
-    }
-    
     var body: some View {
         HStack(spacing: 0) {
             HStack(spacing: 8) {
@@ -102,18 +93,21 @@ struct RainForecastHourRow: View {
                     .font(.headline)
                     .frame(width: 20)
                     .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(isRaining ? rainForeground : Color.primary)
+                    .foregroundStyle(isRaining ? Color("TextColor") : Color.primary)
+                    .accessibilityHidden(true)
                 
                 Text(hour.date, formatter: hourFormatter)
-                    .frame(width: 40, alignment: .trailing)
+                    .frame(width: 60, alignment: .leading)
                 
                 Text(hour.temperature.formatted(temperatureFormat))
                 
                 Label {
                     Text(windSpeed.formatted(windSpeedFormat))
+                        .lineLimit(1)
                 } icon: {
                     Image(systemName: "wind")
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -124,14 +118,26 @@ struct RainForecastHourRow: View {
                 Text("\(Int(hour.precipitationChance * 100))%")
             } icon: {
                 Image(systemName: isRaining ? "drop.fill" : "drop")
-                    .foregroundStyle(isRaining ? rainForeground : Color.secondary)
+                    .foregroundStyle(isRaining ? Color("TextColor") : Color.secondary)
+                    .accessibilityHidden(true)
             }
             .monospacedDigit()
             .frame(width: 64, alignment: .leading)
         }
         .frame(height: 44)
         .padding(.horizontal, 8)
-        .background(isRaining ? rainBackground : .clear)
-        .foregroundStyle(isRaining ? rainForeground : Color.primary)
+        .background(isRaining ? Color("AccentColor") : .clear)
+        .foregroundStyle(isRaining ? Color("TextColor") : Color.primary)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary)
+    }
+    
+    private var accessibilitySummary: Text {
+        let time = hour.date.formatted(date: .omitted, time: .shortened)
+        let temperature = hour.temperature.formatted(temperatureFormat)
+        let wind = windSpeed.formatted(windSpeedFormat)
+        let chance = Int(hour.precipitationChance * 100)
+        let rainStatus = isRaining ? ", meets the rain threshold" : ""
+        return Text("\(time), \(temperature), wind \(wind), precipitation chance \(chance) percent\(rainStatus)")
     }
 }

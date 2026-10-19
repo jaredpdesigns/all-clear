@@ -17,7 +17,6 @@ struct WeatherAttributionView: View {
             .frame(height: 12)
         }
         .frame(maxWidth: .infinity)
-        .opacity(0.25)
         .accessibilityLabel("Weather data provided by Apple Weather")
     }
     

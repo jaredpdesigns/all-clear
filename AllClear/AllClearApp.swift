@@ -13,6 +13,7 @@ struct AllClearApp: App {
 #if os(macOS)
         Window("All Clear", id: "main") {
             ContentView()
+                .frame(minWidth: 400)
                 .environment(locationService)
                 .environment(weatherDataService)
         }
