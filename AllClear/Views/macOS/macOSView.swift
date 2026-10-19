@@ -65,7 +65,9 @@ struct macOSView: View {
                 ForecastUnavailableView(day: selectedDay)
             }
         }
+#if os(macOS)
         .containerBackground(.regularMaterial, for: .window)
+#endif
         .toolbar {
             ToolbarItem(placement: .automatic) {
                 Button {
