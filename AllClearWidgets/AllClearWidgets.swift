@@ -2,6 +2,11 @@ import CoreLocation
 import SwiftUI
 import WeatherKit
 import WidgetKit
+#if canImport(UIKit)
+import UIKit
+#elseif canImport(AppKit)
+import AppKit
+#endif
 
 private let appGroupIdentifier = "group.com.jaredpdesigns.AllClear"
 private let selectedHoursKey = "selectedHours"
@@ -13,7 +18,7 @@ struct RainForecastEntry: TimelineEntry {
     let rainThresholdPercent: Double
     let errorMessage: String?
     let attribution: WeatherAttribution?
-
+    
     var averageChance: Double? {
         guard !hours.isEmpty else { return nil }
         return hours.map(\.precipitationChance).reduce(0, +) / Double(hours.count)
@@ -42,13 +47,13 @@ struct RainForecastProvider: TimelineProvider {
             attribution: nil
         )
     }
-
+    
     func getSnapshot(in context: Context, completion: @escaping (RainForecastEntry) -> Void) {
         Task {
             completion(await makeEntry())
         }
     }
-
+    
     func getTimeline(in context: Context, completion: @escaping (Timeline<RainForecastEntry>) -> Void) {
         Task {
             let entry = await makeEntry()
@@ -56,7 +61,7 @@ struct RainForecastProvider: TimelineProvider {
             completion(Timeline(entries: [entry], policy: .after(nextRefresh)))
         }
     }
-
+    
     private func makeEntry() async -> RainForecastEntry {
         guard let defaults = UserDefaults(suiteName: appGroupIdentifier),
               let locationData = defaults.data(forKey: "savedLocation") else {
@@ -69,7 +74,7 @@ struct RainForecastProvider: TimelineProvider {
                 attribution: nil
             )
         }
-
+        
         do {
             let attribution = try await WeatherService.shared.attribution
             let savedLocation = try JSONDecoder().decode(SharedSavedLocation.self, from: locationData)
@@ -86,7 +91,7 @@ struct RainForecastProvider: TimelineProvider {
             let rainThresholdPercent = defaults.object(forKey: "rainThresholdPercent") as? Double ?? 5
             let isUsingSelectedHours = filterMode != "All Hours" && selectedHours.count < 24
             let displayHours: [HourWeather]
-
+            
             if isUsingSelectedHours {
                 displayHours = upcomingHours.filter {
                     selectedHours.contains(Calendar.current.component(.hour, from: $0.date))
@@ -94,7 +99,7 @@ struct RainForecastProvider: TimelineProvider {
             } else {
                 displayHours = upcomingHours
             }
-
+            
             return RainForecastEntry(
                 date: now,
                 hours: displayHours.map {
@@ -116,7 +121,7 @@ struct RainForecastProvider: TimelineProvider {
             )
         }
     }
-
+    
     private static func selectedHours(from defaults: UserDefaults) -> Set<Int> {
         guard let data = defaults.data(forKey: selectedHoursKey),
               let hours = try? JSONDecoder().decode(Set<Int>.self, from: data) else {
@@ -154,7 +159,7 @@ private struct RainForecastView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.colorScheme) private var colorScheme
     let entry: RainForecastEntry
-
+    
     var body: some View {
         Group {
             if let error = entry.errorMessage {
@@ -194,7 +199,7 @@ private struct RainForecastView: View {
             Color.clear
         }
     }
-
+    
     private var smallForecast: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Average Rain")
@@ -210,10 +215,9 @@ private struct RainForecastView: View {
                     .font(.system(size: 42, weight: .semibold))
                     .monospacedDigit()
             }
-            Spacer()
-        }.frame(maxWidth: .infinity)
+        }.frame(maxHeight: .infinity)
     }
-
+    
     private var mediumForecast: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text("Chance of Rain")
@@ -224,37 +228,34 @@ private struct RainForecastView: View {
                 }
             }
             .frame(maxWidth: .infinity)
-        }
+        }.frame(maxHeight: .infinity)
     }
-
+    
     private var largeForecast: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("Chance of Rain")
                 .font(.headline.weight(.semibold))
-            VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
                 ForEach(Array(entry.hours.prefix(6).enumerated()), id: \.element.id) { index, hour in
                     RainForecastHourRow(
                         hour: hour,
                         rainThresholdPercent: entry.rainThresholdPercent,
-                        compact: true
                     )
-                    .font(.footnote)
                     if index < min(entry.hours.count, 6) - 1 {
                         Divider()
                     }
                 }
-            }
-            Spacer()
+            }.frame(maxHeight: .infinity, alignment: .topLeading)
         }
     }
-
+    
     @ViewBuilder
     private var attributionMark: some View {
         if let attribution = entry.attribution {
             WeatherAttributionView(attribution: attribution)
         }
     }
-
+    
     private var hourRange: String {
         guard let firstHour = entry.hours.first,
               let lastHour = entry.hours.last,
@@ -267,12 +268,22 @@ private struct RainForecastView: View {
         formatter.timeStyle = .short
         return formatter.string(from: firstHour.date, to: endDate)
     }
-
+    
+    private var dividerColor: Color {
+#if canImport(UIKit)
+        Color(uiColor: .separator)
+#elseif canImport(AppKit)
+        Color(nsColor: .separatorColor)
+#else
+        Color.secondary.opacity(0.25)
+#endif
+    }
+    
     private func hourColumn(_ hour: RainForecastHourData) -> some View {
         let isRaining = hour.precipitationChance >= entry.rainThresholdPercent / 100
         let rainForeground: Color = colorScheme == .dark ? .black : .white
         let rainBackground: Color = colorScheme == .dark ? .white : .black
-
+        
         return VStack(spacing: 4) {
             Text(hour.date, format: .dateTime.hour())
                 .font(.caption)
@@ -298,5 +309,9 @@ private struct RainForecastView: View {
         .background(isRaining ? rainBackground : .clear)
         .foregroundStyle(isRaining ? rainForeground : Color.primary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8)
+                .strokeBorder(dividerColor, lineWidth: 1)
+        }
     }
 }

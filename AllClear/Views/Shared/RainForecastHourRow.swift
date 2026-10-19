@@ -38,7 +38,6 @@ struct RainForecastHourRow: View {
     @Environment(\.colorScheme) private var colorScheme
     let hour: RainForecastHourData
     let rainThresholdPercent: Double
-    var compact = false
     
     private var hourFormatter: DateFormatter {
         let formatter = DateFormatter()
@@ -97,8 +96,8 @@ struct RainForecastHourRow: View {
     }
     
     var body: some View {
-        HStack(spacing: compact ? 8 : 16) {
-            HStack(spacing: compact ? 8 : 16) {
+        HStack(spacing: 0) {
+            HStack(spacing: 8) {
                 Image(systemName: isRaining ? "\(hour.symbolName).fill" : hour.symbolName)
                     .font(.headline)
                     .frame(width: 20)
@@ -106,11 +105,9 @@ struct RainForecastHourRow: View {
                     .foregroundStyle(isRaining ? rainForeground : Color.primary)
                 
                 Text(hour.date, formatter: hourFormatter)
-                    .monospacedDigit()
-                    .frame(width: compact ? 40 : 48, alignment: .trailing)
+                    .frame(width: 40, alignment: .trailing)
                 
                 Text(hour.temperature.formatted(temperatureFormat))
-                    .monospacedDigit()
                 
                 Label {
                     Text(windSpeed.formatted(windSpeedFormat))
@@ -118,9 +115,9 @@ struct RainForecastHourRow: View {
                     Image(systemName: "wind")
                         .foregroundStyle(.secondary)
                 }
-                .monospacedDigit()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .monospacedDigit()
             Spacer()
             
             Label {
@@ -130,7 +127,7 @@ struct RainForecastHourRow: View {
                     .foregroundStyle(isRaining ? rainForeground : Color.secondary)
             }
             .monospacedDigit()
-            .frame(width: compact ? 60 : 72, alignment: .leading)
+            .frame(width: 64, alignment: .leading)
         }
         .frame(height: 44)
         .padding(.horizontal, 8)
