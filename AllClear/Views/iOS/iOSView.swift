@@ -5,22 +5,22 @@ import WeatherKit
 struct iOSView: View {
     @Environment(LocationService.self) private var locationService
     @Environment(WeatherDataService.self) private var weatherService
-    
+
     @State private var selectedHours = SharedSettings.selectedHours()
     @AppStorage(SharedSettings.filterModeKey, store: SharedSettings.defaults)
     private var filterMode: HourFilterMode = .selectedHours
     @State private var showingHourPicker = false
     @State private var selectedTab: ForecastDay = .today
-    
+
     private var hasCustomSelection: Bool {
         selectedHours.count < 24
     }
-    
+
     private var isRequestingLocation: Bool {
         (locationService.location == nil && locationService.isRequestingLocation && locationService.errorMessage == nil)
         || locationService.location != nil
     }
-    
+
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Today", systemImage: "calendar", value: ForecastDay.today) {
@@ -60,7 +60,7 @@ struct iOSView: View {
             SharedSettings.saveFilterMode(newValue)
         }
     }
-    
+
     @ViewBuilder
     private func dayContent(for day: ForecastDay, scrollProxy: ScrollViewProxy) -> some View {
         if weatherService.isLoading {
@@ -79,16 +79,22 @@ struct iOSView: View {
             }
         } else if let forecast = weatherService.dayForecast(for: day) {
             ScrollView {
-                PrecipitationView(
-                    currentWeather: day == .today ? weatherService.currentWeather : nil,
-                    dayForecast: forecast,
-                    hours: filteredHours(for: day),
-                    date: day.date,
-                    location: locationService.location,
-                    locationName: locationService.locationName,
-                    attribution: weatherService.attribution
-                )
-                .id("forecastTop")
+                VStack(spacing: 0) {
+                    Color.clear
+                        .frame(height: 1)
+                        .accessibilityHidden(true)
+                        .id("forecastTop")
+
+                    PrecipitationView(
+                        currentWeather: day == .today ? weatherService.currentWeather : nil,
+                        dayForecast: forecast,
+                        hours: filteredHours(for: day),
+                        date: day.date,
+                        location: locationService.location,
+                        locationName: locationService.locationName,
+                        attribution: weatherService.attribution
+                    )
+                }
             }
             .refreshable {
                 await weatherService.refresh(using: locationService)
@@ -100,7 +106,7 @@ struct iOSView: View {
             ForecastUnavailableView(day: day)
         }
     }
-    
+
     @ToolbarContentBuilder
     private var toolbarItems: some ToolbarContent {
         ToolbarItem(placement: .navigationBarLeading) {
@@ -122,7 +128,7 @@ struct iOSView: View {
                             .foregroundStyle(.secondary)
                     }
                     .tag(HourFilterMode.selectedHours)
-                    
+
                     Label {
                         Text("All Hours")
                     } icon: {
@@ -139,7 +145,7 @@ struct iOSView: View {
             .accessibilityLabel("Filter forecast hours")
         }
     }
-    
+
     private func filteredHours(for day: ForecastDay) -> [HourWeather] {
         let calendar = Calendar.current
         let dayHours: [HourWeather] = switch day {
@@ -148,7 +154,7 @@ struct iOSView: View {
         case .tomorrow:
             weatherService.hourlyForecast.filter { calendar.isDateInTomorrow($0.date) }
         }
-        
+
         guard hasCustomSelection, filterMode == .selectedHours else {
             return dayHours
         }

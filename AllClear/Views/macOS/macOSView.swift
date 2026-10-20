@@ -1,5 +1,8 @@
 import SwiftUI
 import WeatherKit
+#if os(macOS)
+import AppKit
+#endif
 
 struct macOSView: View {
     @Environment(LocationService.self) private var locationService
@@ -7,6 +10,7 @@ struct macOSView: View {
     
     @State private var selectedDay: ForecastDay = .today
     @State private var selectedHours = SharedSettings.selectedHours()
+    @State private var isFullScreen = false
     @AppStorage(SharedSettings.filterModeKey, store: SharedSettings.defaults)
     private var filterMode: HourFilterMode = .selectedHours
     @State private var showingHourPicker = false
@@ -65,8 +69,14 @@ struct macOSView: View {
                 ForecastUnavailableView(day: selectedDay)
             }
         }
+        .windowMaterial(isFullScreen: isFullScreen)
 #if os(macOS)
-        .containerBackground(.regularMaterial, for: .window)
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didEnterFullScreenNotification)) { _ in
+            isFullScreen = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: NSWindow.didExitFullScreenNotification)) { _ in
+            isFullScreen = false
+        }
 #endif
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -141,3 +151,22 @@ struct macOSView: View {
         }
     }
 }
+
+#if os(macOS)
+private extension View {
+    @ViewBuilder
+    func windowMaterial(isFullScreen: Bool) -> some View {
+        if isFullScreen {
+            self
+        } else {
+            containerBackground(.regularMaterial, for: .window)
+        }
+    }
+}
+#else
+private extension View {
+    func windowMaterial(isFullScreen: Bool) -> some View {
+        self
+    }
+}
+#endif
