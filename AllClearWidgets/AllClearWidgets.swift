@@ -281,13 +281,13 @@ private struct RainForecastView: View {
     private func hourColumn(_ hour: RainForecastHourData) -> some View {
         let isRaining = hour.precipitationChance >= entry.rainThresholdPercent / 100
         
-        return VStack(spacing: 4) {
+        return VStack(spacing: 1) {
             Text(hour.date, format: .dateTime.hour())
                 .font(.caption)
                 .foregroundStyle(isRaining ? Color("TextColor") : Color.secondary)
+                .opacity(isRaining ? 0.75:1)
             Image(systemName: hour.symbolName)
                 .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(isRaining ? Color("TextColor") : Color.primary)
             Text(hour.temperature.formatted(
                 .measurement(
                     width: .abbreviated,
@@ -297,6 +297,8 @@ private struct RainForecastView: View {
             ))
             .font(.caption)
             .monospacedDigit()
+            .foregroundStyle(isRaining ? Color("TextColor") : Color.secondary)
+            .opacity(isRaining ? 0.75:1)
             Text(hour.precipitationChance, format: .percent.precision(.fractionLength(0)))
                 .font(.title3.weight(.semibold))
                 .monospacedDigit()
@@ -306,9 +308,5 @@ private struct RainForecastView: View {
         .background(isRaining ? Color("AccentColor") : .clear)
         .foregroundStyle(isRaining ? Color("TextColor") : Color.primary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8)
-                .strokeBorder(dividerColor, lineWidth: 1)
-        }
     }
 }
